@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query, Logger } from '@nestjs/common';
 import { ItemsService } from './items.service';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
@@ -12,11 +12,14 @@ export class ItemsController {
 
   @Get()
   get(@Query('search') search: string) {
+    Logger.debug(search, 'GET');
     return this.itemsService.search(search);
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.itemsService.findOne(+id);
+    Logger.debug(id, 'GET[id]');
+
+    return this.itemsService.findOne(id);
   }
 }
