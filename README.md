@@ -41,3 +41,10 @@ $ npm run start:prod
 
 
 
+## Documentacion desde Postman 
+<a href="https://documenter.getpostman.com/view/20437183/VUjQo5PE" target="_blank">Doc API MELI</a>
+
+## Documentacion desde Swagger 
+```bash
+#  http://localhost:5550/api
+``` 
