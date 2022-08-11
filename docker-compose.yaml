@@ -1,0 +1,16 @@
+version: '3'
+services:
+  meli:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    image: api
+    container_name: meli
+    restart: always 
+    ports:
+      - "${PORT}:${PORT}"
+    environment:
+      PORT: ${PORT}
+
+
+ 

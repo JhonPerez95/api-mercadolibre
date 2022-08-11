@@ -1,20 +1,21 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
-import axios, { AxiosInstance } from 'axios';
 import {
   ItemsResponse,
   ItemByIDInterface,
   ItemDescriptions,
 } from './interfaces/';
+import { AxiosAdapter } from 'src/common/adapters/axios.adapter';
 @Injectable()
 export class ItemsService {
-  private readonly axios: AxiosInstance = axios;
+  constructor(private readonly http: AxiosAdapter) {}
 
   async search(search: string) {
+    if (!search) throw new NotFoundException('Search not found');
     const url = `https://api.mercadolibre.com/sites/MLA/search?q=${search}`;
 
-    const { data } = await this.axios.get<ItemsResponse>(url);
+    const data = await this.http.get<ItemsResponse>(url);
 
     const items = data.results.map((item) => ({
       id: item.id,
@@ -29,36 +30,35 @@ export class ItemsService {
       picture: `https://http2.mlstatic.com/D_${item.thumbnail_id}-O.jpg`,
       condition: item.condition,
       free_shipping: item.shipping.free_shipping,
+      addres: item.address.state_name,
     }));
 
-    const categories = data.available_filters.find(
-      (item) => item.id == 'category',
+    const categories = data?.filters[0]?.values[0]?.path_from_root.map(
+      (item) => item.name,
     );
 
-    const jsonRes = {
+    return {
       author: {
         name: 'Jhon',
         lastname: 'Perez',
       },
-      categories: categories.values.map((item) => item.name),
+      categories: categories ?? [],
       items,
     };
-    return jsonRes;
   }
 
   async findDescription(id: string) {
     const url = `https://api.mercadolibre.com/items/${id}/description`;
-
-    const { data } = await this.axios.get<ItemDescriptions>(url);
-    return data.plain_text;
+    const { plain_text } = await this.http.get<ItemDescriptions>(url);
+    return plain_text;
   }
 
   async findOne(id: string) {
     const url = `https://api.mercadolibre.com/items/${id}`;
 
-    const { data } = await this.axios.get<ItemByIDInterface>(url);
+    const data = await this.http.get<ItemByIDInterface>(url);
 
-    const jsonRes = {
+    return {
       author: {
         name: 'Jhon',
         lastname: 'Perez',
@@ -80,6 +80,5 @@ export class ItemsService {
         description: await this.findDescription(id),
       },
     };
-    return jsonRes;
   }
 }

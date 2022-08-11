@@ -12,14 +12,11 @@ export class ItemsController {
 
   @Get()
   get(@Query('search') search: string) {
-    Logger.debug(search, 'GET');
     return this.itemsService.search(search);
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    Logger.debug(id, 'GET[id]');
-
     return this.itemsService.findOne(id);
   }
 }
