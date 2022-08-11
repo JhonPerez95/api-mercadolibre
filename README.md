@@ -14,7 +14,7 @@
 ## Con Docker (easy)
 
 ```bash
-# El archivo .env se define el puerto en donde estara expuesta el API
+
 $ docker-compose up --build -d
 
 ```
